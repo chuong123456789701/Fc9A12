@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FC 9A12</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f7f8f9;
+  --border: #e2e5e9;
+  --text: #1a1d21;
+  --muted: #6b7280;
+  --accent: #1f5a43;
+  --accent-light: #eaf3ee;
+  --red: #a83b2e;
+  --amber: #9a6516;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ HEADER ============ */
+header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.4px;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.tabs {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab-btn:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ============ MAIN ============ */
+main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.page-head { margin-bottom: 22px; }
+
+.page-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text);
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* ============ 3D VIEWER ============ */
+#canvas-box {
+  position: relative;
+  height: 580px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #f2f4f6;
+}
+
+#canvas-box canvas { display: block; width: 100%; height: 100%; }
+
+@media (max-width: 640px) { #canvas-box { height: 400px; } }
+
+.viewer-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.ctrl-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: #4a5461;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.ctrl-btn:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.ctrl-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(242, 244, 246, 0.92);
+  z-index: 3;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.loading-overlay.hide { opacity: 0; }
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #d6dbe0;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ PROGRESS ============ */
+.progress-card { padding: 20px 22px; margin-bottom: 14px; }
+
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.progress-top h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.progress-top .amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+}
+
+.progress-top .amount small {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.progress-top .count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.bar {
+  height: 8px;
+  background: #eef0f3;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0;
+  transition: width 1s ease;
+  border-radius: 99px;
+}
+
+/* ============ TABLE ============ */
+.table-card { overflow: hidden; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+thead th {
+  text-align: left;
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--bg-soft); }
+
+.person { display: flex; align-items: center; gap: 11px; }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.person-name { font-weight: 600; font-size: 13.5px; }
+.person-role { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+.money {
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.tag.paid { background: var(--accent-light); color: var(--accent); }
+.tag.unpaid { background: #fbe9e6; color: var(--red); }
+.tag.wait { background: #faf0dd; color: var(--amber); }
+
+/* ============ INFO CARDS ============ */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.info-card { padding: 18px; }
+
+.info-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.rules-card { padding: 22px 24px; margin-top: 14px; }
+
+.rules-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rules-card ol {
+  padding-left: 20px;
+  color: #3d4653;
+  font-size: 13.5px;
+}
+
+.rules-card ol li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.rules-card ol li:last-child { margin-bottom: 0; }
+
+/* ============ MEMBERS ============ */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.member-card {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-num {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.member-info h5 {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+
+.member-info .pos { font-size: 12px; color: var(--muted); }
+
+/* ============ SCHEDULE ============ */
+.schedule-list { display: flex; flex-direction: column; gap: 8px; }
+
+.schedule-item {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.schedule-left h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.schedule-left p { font-size: 12.5px; color: var(--muted); }
+
+.schedule-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="#" class="brand">
+      <div class="brand-mark">9A12</div>
+      <div class="brand-name">FC 9A12</div>
+    </a>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="jersey">Áo đấu 3D</button>
+      <button class="tab-btn" data-tab="payment">Quỹ đội</button>
+      <button class="tab-btn" data-tab="tournament">Giải đấu</button>
+      <button class="tab-btn" data-tab="members">Thành viên</button>
+      <button class="tab-btn" data-tab="schedule">Lịch đá</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="panel active" id="panel-jersey">
+    <div class="page-head">
+      <h2>Áo đấu 3D</h2>
+    </div>
+
+    <div id="canvas-box">
+      <div class="viewer-controls">
+        <button class="ctrl-btn on" id="btn-rotate" title="Tự động xoay">↻</button>
+        <button class="ctrl-btn" id="btn-reset" title="Đặt lại">⌂</button>
+        <button class="ctrl-btn" id="btn-full" title="Toàn màn hình">⛶</button>
+      </div>
+
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-payment">
+    <div class="page-head">
+      <h2>Quỹ đội</h2>
+    </div>
+
+    <div class="card progress-card">
+      <div class="progress-top">
+        <div>
+          <h3>Đã thu được</h3>
+          <div class="amount"><span id="pay-total">0</span><small> / <span id="pay-target">0</span> đ</small></div>
+        </div>
+        <div class="count" id="pay-count"></div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+    </div>
+
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Thành viên</th>
+            <th>Số tiền</th>
+            <th>Ngày nộp</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody id="payment-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-tournament">
+    <div class="page-head">
+      <h2>Giải bóng đá Nguyễn Lương Bằng</h2>
+    </div>
+
+    <div class="info-grid">
+      <div class="card info-card">
+        <div class="info-label">Tên giải</div>
+        <div class="info-value">Giải bóng đá Nguyễn Lương Bằng 2025</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Thời gian thi đấu</div>
+        <div class="info-value">15/06 – 12/07/2025</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Địa điểm</div>
+        <div class="info-value">Sân bóng Nguyễn Lương Bằng, TP.HCM</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Thể thức</div>
+        <div class="info-value">Sân 7 người · Vòng bảng + Knockout</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Số đội tham dự</div>
+        <div class="info-value">12 đội</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Lệ phí</div>
+        <div class="info-value">3.000.000 đ / đội</div>
+      </div>
+    </div>
+
+    <div class="card rules-card">
+      <h3>Điều lệ giải đấu</h3>
+      <ol>
+        <li>Mỗi đội đăng ký tối thiểu 10 cầu thủ, tối đa 15 cầu thủ.</li>
+        <li>Thi đấu 2 hiệp, mỗi hiệp 25 phút, nghỉ giữa hiệp 10 phút.</li>
+        <li>Vòng bảng tính điểm: thắng 3 điểm, hòa 1 điểm, thua 0 điểm.</li>
+        <li>Số lần thay người không giới hạn trong trận.</li>
+        <li>Cầu thủ nhận 2 thẻ vàng trong một trận sẽ bị truất quyền thi đấu và nghỉ trận kế tiếp.</li>
+        <li>Các đội phải có mặt trước giờ bóng lăn 15 phút để điểm danh.</li>
+        <li>Trang phục thi đấu: áo chính thức của đội, giày đinh TF hoặc AG.</li>
+        <li>Giải thưởng: Nhất 10.000.000đ + cúp, Nhì 5.000.000đ, Ba 2.000.000đ.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-members">
+    <div class="page-head">
+      <h2>Thành viên</h2>
+    </div>
+    <div class="member-grid" id="member-grid"></div>
+  </section>
+
+  <section class="panel" id="panel-schedule">
+    <div class="page-head">
+      <h2>Lịch tập và thi đấu</h2>
+    </div>
+
+    <div class="schedule-list" id="schedule-list"></div>
+
+    <div class="info-grid" style="margin-top: 14px;">
+      <div class="card info-card">
+        <div class="info-label">Giờ tập cố định</div>
+        <div class="info-value">19:30 – 21:00 · Thứ 3 & Thứ 6</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Sân tập</div>
+        <div class="info-value">Sân số 3 — Nguyễn Lương Bằng</div>
+      </div>
+      <div class="card info-card">
+        <div class="info-label">Đội trưởng</div>
+        <div class="info-value">Nguyễn Minh Khoa · 0909 123 456</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const MODEL_CONFIG = {
+  fileName: 'https://github.com/chuong123456789701/Fc9A12/raw/refs/heads/main/meshy-model-2026-11-10T06-17-52-861Z.glb'
+};
+
+/* ---------------- Tab switching ---------------- */
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.panel');
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'jersey') setTimeout(resize, 60);
+  });
+});
+
+/* ---------------- 3D scene ---------------- */
+const box = document.getElementById('canvas-box');
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+camera.position.set(0, 1.4, 4.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+box.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xc8d0d8, 1.4));
+
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(4, 7, 5);
+key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024);
+key.shadow.camera.near = 1;
+key.shadow.camera.far = 30;
+key.shadow.camera.left = -4;
+key.shadow.camera.right = 4;
+key.shadow.camera.top = 4;
+key.shadow.camera.bottom = -4;
+key.shadow.bias = -0.0005;
+scene.add(key);
+
+const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);
+fillLight.position.set(-5, 3, 2);
+scene.add(fillLight);
+
+const backLight = new THREE.DirectionalLight(0xffffff, 0.8);
+backLight.position.set(0, 2, -6);
+scene.add(backLight);
+
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(4.5, 64),
+  new THREE.MeshStandardMaterial({ color: 0xdde2e8, roughness: 0.9, metalness: 0.0 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1.35;
+ground.receiveShadow = true;
+scene.add(ground);
+
+const holder = new THREE.Group();
+scene.add(holder);
+
+function makePlaceholder() {
+  const g = new THREE.Group();
+  const mesh = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.1, 1),
+    new THREE.MeshStandardMaterial({
+      color: 0x9aa8b6,
+      roughness: 0.5,
+      metalness: 0.1,
+      flatShading: true
+    })
+  );
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  g.add(mesh);
+
+  const wire = new THREE.LineSegments(
+    new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.12, 1)),
+    new THREE.LineBasicMaterial({ color: 0x506680, transparent: true, opacity: 0.3 })
+  );
+  g.add(wire);
+  return g;
+}
+
+const placeholder = makePlaceholder();
+holder.add(placeholder);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.5;
+controls.minDistance = 1.8;
+controls.maxDistance = 12;
+controls.target.set(0, 0, 0);
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  if (placeholder.visible) {
+    placeholder.position.y = Math.sin(t * 0.9) * 0.08;
+    placeholder.rotation.y = t * 0.3;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+function resize() {
+  const w = box.clientWidth, h = box.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(box);
+window.addEventListener('resize', resize);
+resize();
+
+/* Buttons */
+const btnRotate = document.getElementById('btn-rotate');
+btnRotate.addEventListener('click', () => {
+  controls.autoRotate = !controls.autoRotate;
+  btnRotate.classList.toggle('on', controls.autoRotate);
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  controls.reset();
+  camera.position.set(0, 1.4, 4.5);
+  controls.target.set(0, 0, 0);
+  controls.update();
+});
+
+document.getElementById('btn-full').addEventListener('click', () => {
+  if (!document.fullscreenElement) box.requestFullscreen?.();
+  else document.exitFullscreen?.();
+});
+
+/* ---------------- Auto-load model ---------------- */
+const loader = new GLTFLoader();
+const loadingOverlay = document.getElementById('loading-overlay');
+
+let currentModel = null;
+
+function fitCameraToObject(obj) {
+  const bounds = new THREE.Box3().setFromObject(obj);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+
+  obj.position.sub(center);
+  const maxDim = Math.max(size.x, size.y, size.z) || 1;
+  const dist = maxDim / (2 * Math.tan(Math.PI * camera.fov / 360)) * 1.8;
+
+  camera.position.set(dist * 0.4, dist * 0.3, dist);
+  controls.target.set(0, 0, 0);
+  camera.near = dist / 100;
+  camera.far = dist * 100;
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
+function disposeTree(obj) {
+  obj.traverse(o => {
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) {
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach(m => {
+        for (const k in m) {
+          if (m[k] && m[k].isTexture) m[k].dispose();
+        }
+        m.dispose();
+      });
+    }
+  });
+}
+
+function loadInitialModel() {
+  loader.load(
+    MODEL_CONFIG.fileName,
+    (gltf) => {
+      loadingOverlay.classList.add('hide');
+
+      if (currentModel) { holder.remove(currentModel); disposeTree(currentModel); }
+      placeholder.visible = false;
+
+      const model = gltf.scene;
+      model.traverse(o => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          if (o.material) {
+            o.material.envMapIntensity = 1.0;
+            o.material.needsUpdate = true;
+          }
+        }
+      });
+
+      holder.add(model);
+      currentModel = model;
+      fitCameraToObject(model);
+    },
+    undefined,
+    (err) => {
+      console.error('Không tải được mô hình:', err);
+      loadingOverlay.classList.add('hide');
+    }
+  );
+}
+
+setTimeout(loadInitialModel, 60);
+
+/* ---------------- Data rendering ---------------- */
+const PAYMENTS = [
+  { name: 'Nguyễn Minh Khoa', role: 'Đội trưởng', amount: 200000, date: '02/06/2025', status: 'paid' },
+  { name: 'Trần Đức Anh', role: 'Thủ môn', amount: 200000, date: '02/06/2025', status: 'paid' },
+  { name: 'Lê Hoàng Nam', role: 'Hậu vệ', amount: 200000, date: '03/06/2025', status: 'paid' },
+  { name: 'Phạm Quốc Bảo', role: 'Hậu vệ', amount: 200000, date: '03/06/2025', status: 'paid' },
+  { name: 'Vũ Tiến Dũng', role: 'Tiền vệ', amount: 200000, date: '04/06/2025', status: 'paid' },
+  { name: 'Đỗ Văn Hùng', role: 'Tiền vệ', amount: 200000, date: '—', status: 'unpaid' },
+  { name: 'Ngô Gia Huy', role: 'Tiền đạo', amount: 200000, date: '05/06/2025', status: 'paid' },
+  { name: 'Bùi Xuân Trường', role: 'Tiền đạo', amount: 200000, date: '—', status: 'wait' },
+  { name: 'Hoàng Nhật Minh', role: 'Dự bị', amount: 200000, date: '—', status: 'unpaid' },
+  { name: 'Đặng Tuấn Kiệt', role: 'Dự bị', amount: 200000, date: '06/06/2025', status: 'paid' },
+];
+
+function money(n) { return n.toLocaleString('vi-VN'); }
+function initials(name) { return name.trim().split(' ').slice(-2).map(w => w[0]).join(''); }
+
+function renderPayments() {
+  const body = document.getElementById('payment-body');
+  body.innerHTML = PAYMENTS.map(p => {
+    let tag;
+    if (p.status === 'paid') tag = '<span class="tag paid">Đã nộp</span>';
+    else if (p.status === 'wait') tag = '<span class="tag wait">Chờ xác nhận</span>';
+    else tag = '<span class="tag unpaid">Chưa nộp</span>';
+
+    return `<tr>
+      <td>
+        <div class="person">
+          <div class="avatar">${initials(p.name)}</div>
+          <div>
+            <div class="person-name">${p.name}</div>
+            <div class="person-role">${p.role}</div>
+          </div>
+        </div>
+      </td>
+      <td class="money">${money(p.amount)} đ</td>
+      <td style="color: var(--muted)">${p.date}</td>
+      <td>${tag}</td>
+    </tr>`;
+  }).join('');
+
+  const paid = PAYMENTS.filter(p => p.status === 'paid');
+  const totalPaid = paid.reduce((s, p) => s + p.amount, 0);
+  const totalTarget = PAYMENTS.reduce((s, p) => s + p.amount, 0);
+  const pct = totalTarget ? Math.round(totalPaid / totalTarget * 100) : 0;
+
+  document.getElementById('pay-total').textContent = money(totalPaid);
+  document.getElementById('pay-target').textContent = money(totalTarget);
+  document.getElementById('pay-count').textContent =
+    `${paid.length}/${PAYMENTS.length} người đã đóng`;
+
+  setTimeout(() => document.getElementById('bar-fill').style.width = pct + '%', 200);
+}
+
+const MEMBERS = [
+  { name: 'Nguyễn Minh Khoa', num: 10, pos: 'Tiền đạo · Đội trưởng' },
+  { name: 'Trần Đức Anh', num: 1, pos: 'Thủ môn' },
+  { name: 'Lê Hoàng Nam', num: 4, pos: 'Trung vệ' },
+  { name: 'Phạm Quốc Bảo', num: 5, pos: 'Trung vệ' },
+  { name: 'Vũ Tiến Dũng', num: 8, pos: 'Tiền vệ trung tâm' },
+  { name: 'Đỗ Văn Hùng', num: 6, pos: 'Tiền vệ phòng ngự' },
+  { name: 'Ngô Gia Huy', num: 11, pos: 'Tiền đạo cánh' },
+  { name: 'Bùi Xuân Trường', num: 7, pos: 'Tiền đạo cánh' },
+  { name: 'Hoàng Nhật Minh', num: 14, pos: 'Hậu vệ cánh' },
+  { name: 'Đặng Tuấn Kiệt', num: 17, pos: 'Tiền vệ tấn công' },
+  { name: 'Trịnh Bảo Long', num: 3, pos: 'Hậu vệ trái' },
+  { name: 'Lý Thành Đạt', num: 9, pos: 'Tiền đạo dự bị' },
+];
+
+function renderMembers() {
+  document.getElementById('member-grid').innerHTML = MEMBERS.map(m => `
+    <div class="card member-card">
+      <div class="member-num">${m.num}</div>
+      <div class="member-info">
+        <h5>${m.name}</h5>
+        <div class="pos">${m.pos}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+const SCHEDULE = [
+  { title: 'Tập luyện — chiến thuật phòng ngự', meta: 'Sân số 3 · Nguyễn Lương Bằng', time: 'Thứ 3 · 19:30 – 21:00' },
+  { title: 'Tập luyện — sút và phối hợp', meta: 'Sân số 3 · Nguyễn Lương Bằng', time: 'Thứ 6 · 19:30 – 21:00' },
+  { title: 'Vòng bảng · FC 9A12 vs FC 9A10', meta: 'Sân số 1 · Nguyễn Lương Bằng', time: '15/06 · 18:00' },
+  { title: 'Vòng bảng · FC 9A12 vs FC 9A7', meta: 'Sân số 2 · Nguyễn Lương Bằng', time: '19/06 · 19:00' },
+  { title: 'Vòng bảng · FC 9A12 vs FC 9B3', meta: 'Sân số 1 · Nguyễn Lương Bằng', time: '23/06 · 17:30' },
+  { title: 'Bán kết', meta: 'Sân trung tâm · Nguyễn Lương Bằng', time: '05/07 · 19:00' },
+  { title: 'Chung kết', meta: 'Sân trung tâm · Nguyễn Lương Bằng', time: '12/07 · 19:30' },
+];
+
+function renderSchedule() {
+  document.getElementById('schedule-list').innerHTML = SCHEDULE.map(s => `
+    <div class="card schedule-item">
+      <div class="schedule-left">
+        <h4>${s.title}</h4>
+        <p>${s.meta}</p>
+      </div>
+      <div class="schedule-time">${s.time}</div>
+    </div>
+  `).join('');
+}
+
+renderPayments();
+renderMembers();
+renderSchedule();
+</script>
+</body>
+</html>
