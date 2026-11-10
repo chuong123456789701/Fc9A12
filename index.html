@@ -67,6 +67,7 @@ header {
   gap: 11px;
   text-decoration: none;
   color: inherit;
+  flex-shrink: 0;
 }
 
 .brand-mark {
@@ -89,11 +90,19 @@ header {
   letter-spacing: -0.2px;
 }
 
-.tabs {
+/* Menu cuộn ngang trên mobile */
+.tabs-wrapper {
   margin-left: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  max-width: 100%;
+}
+.tabs-wrapper::-webkit-scrollbar { display: none; } /* Chrome */
+
+.tabs {
   display: flex;
   gap: 2px;
-  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -107,6 +116,7 @@ header {
   border-radius: 6px;
   font-family: inherit;
   transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
 .tab-btn:hover {
@@ -184,16 +194,8 @@ main {
   font-family: inherit;
 }
 
-.ctrl-btn:hover {
-  background: var(--bg-soft);
-  color: var(--text);
-}
-
-.ctrl-btn.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
+.ctrl-btn:hover { background: var(--bg-soft); color: var(--text); }
+.ctrl-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .loading-overlay {
   position: absolute;
@@ -222,11 +224,7 @@ main {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.loading-text {
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 500;
-}
+.loading-text { font-size: 13px; color: var(--muted); font-weight: 500; }
 
 .error-msg {
   display: none;
@@ -239,232 +237,126 @@ main {
   font-size: 13.5px;
 }
 
-/* ============ PROGRESS ============ */
-.progress-card { padding: 20px 22px; margin-bottom: 14px; }
+/* ============ SPORTS TABS ============ */
+.sport-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
 
-.progress-top {
+.sport-header-card {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sport-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sport-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.team-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 680px) {
+  .team-layout { grid-template-columns: 1fr; }
+}
+
+.roster-card {
+  padding: 20px;
+}
+
+.roster-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 12px;
-  gap: 16px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
-.progress-top h3 {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-  margin-bottom: 3px;
-}
-
-.progress-top .amount {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.3px;
-}
-
-.progress-top .amount small {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--muted);
-}
-
-.progress-top .count {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.bar {
-  height: 8px;
-  background: #eef0f3;
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  background: var(--accent);
-  width: 0;
-  transition: width 1s ease;
-  border-radius: 99px;
-}
-
-/* ============ TABLE ============ */
-.table-card { overflow: hidden; }
-
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-
-thead th {
-  text-align: left;
-  padding: 12px 20px;
+.roster-count {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   background: var(--bg-soft);
-  border-bottom: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 99px;
 }
 
-tbody td {
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============ PROGRESS & TABLE ============ */
+.progress-card { padding: 20px 22px; margin-bottom: 14px; }
+.progress-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; gap: 16px; flex-wrap: wrap; }
+.progress-top h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 3px; }
+.progress-top .amount { font-size: 22px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+.progress-top .amount small { font-size: 13.5px; font-weight: 500; color: var(--muted); }
+.progress-top .count { font-size: 13px; color: var(--muted); }
+.bar { height: 8px; background: #eef0f3; border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); width: 0; transition: width 1s ease; border-radius: 99px; }
+
+.table-card { overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead th { text-align: left; padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+tbody td { padding: 12px 20px; border-bottom: 1px solid var(--border); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: var(--bg-soft); }
 
 .person { display: flex; align-items: center; gap: 11px; }
-
-.avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: var(--accent-light);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
+.avatar { width: 34px; height: 34px; border-radius: 8px; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
 .person-name { font-weight: 600; font-size: 13.5px; }
 .person-role { font-size: 12px; color: var(--muted); margin-top: 1px; }
-
-.money {
-  font-weight: 600;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  font-size: 13.5px;
-}
-
-.tag {
-  display: inline-block;
-  padding: 3px 9px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 4px;
-}
-
+.money { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.tag { display: inline-block; padding: 3px 9px; font-size: 12px; font-weight: 600; border-radius: 4px; }
 .tag.paid { background: var(--accent-light); color: var(--accent); }
 .tag.unpaid { background: #fbe9e6; color: var(--red); }
 .tag.wait { background: #faf0dd; color: var(--amber); }
 
-/* ============ INFO CARDS ============ */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.info-card { padding: 18px; }
-
-.info-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 14.5px;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--text);
-}
-
-.rules-card { padding: 22px 24px; margin-top: 14px; }
-
-.rules-card h3 {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.rules-card ol {
-  padding-left: 20px;
-  color: #3d4653;
-  font-size: 13.5px;
-}
-
-.rules-card ol li {
-  margin-bottom: 8px;
-  line-height: 1.6;
-}
-
-.rules-card ol li:last-child { margin-bottom: 0; }
-
-/* ============ MEMBERS ============ */
-.member-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
-}
-
-.member-card {
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.member-num {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.member-info h5 {
-  font-size: 13.5px;
-  font-weight: 600;
-  margin-bottom: 1px;
-}
-
-.member-info .pos { font-size: 12px; color: var(--muted); }
-
-/* ============ SCHEDULE ============ */
-.schedule-list { display: flex; flex-direction: column; gap: 8px; }
-
-.schedule-item {
-  padding: 14px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.schedule-left h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.schedule-left p { font-size: 12.5px; color: var(--muted); }
-
-.schedule-time {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 6px 12px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
 </style>
 </head>
 <body>
@@ -475,18 +367,23 @@ tbody tr:hover { background: var(--bg-soft); }
       <div class="brand-mark">9A12</div>
       <div class="brand-name">FC 9A12</div>
     </a>
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="jersey">Áo đấu 3D</button>
-      <button class="tab-btn" data-tab="payment">Quỹ đội</button>
-      <button class="tab-btn" data-tab="tournament">Giải đấu</button>
-      <button class="tab-btn" data-tab="members">Thành viên</button>
-      <button class="tab-btn" data-tab="schedule">Lịch đá</button>
-    </nav>
+    <div class="tabs-wrapper">
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="jersey">Áo đấu 3D</button>
+        <button class="tab-btn" data-tab="bong-da-nam">Bóng đá Nam</button>
+        <button class="tab-btn" data-tab="bong-da-nu">Bóng đá Nữ</button>
+        <button class="tab-btn" data-tab="co-vua">Cờ Vua</button>
+        <button class="tab-btn" data-tab="the-boi">Thể Bơi</button>
+        <button class="tab-btn" data-tab="pickleball">Pickleball</button>
+        <button class="tab-btn" data-tab="quy-doi">Quỹ đội</button>
+      </nav>
+    </div>
   </div>
 </header>
 
 <main>
 
+  <!-- 1. ÁO ĐẤU 3D -->
   <section class="panel active" id="panel-jersey">
     <div class="page-head">
       <h2>Áo đấu 3D</h2>
@@ -501,7 +398,7 @@ tbody tr:hover { background: var(--bg-soft); }
 
       <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div>
-        <div class="loading-text">Đang tải mô hình 3D (có thể mất vài giây)...</div>
+        <div class="loading-text">Đang tải mô hình 3D...</div>
       </div>
     </div>
     
@@ -510,7 +407,179 @@ tbody tr:hover { background: var(--bg-soft); }
     </div>
   </section>
 
-  <section class="panel" id="panel-payment">
+  <!-- 2. BÓNG ĐÁ NAM -->
+  <section class="panel" id="panel-bong-da-nam">
+    <div class="page-head">
+      <h2>Đội bóng Nam 9/12</h2>
+    </div>
+
+    <div class="sport-info-grid">
+      <div class="card sport-header-card">
+        <div class="sport-label">Ngày thi đấu</div>
+        <div class="sport-value">Chiều thứ Bảy 21/11/2026</div>
+      </div>
+      <div class="card sport-header-card">
+        <div class="sport-label">Địa điểm</div>
+        <div class="sport-value">Sân bóng bộ đội trình sát, kiệt 151 Âu Cơ</div>
+      </div>
+    </div>
+
+    <div class="team-layout">
+      <div class="card roster-card">
+        <div class="roster-title">Đội hình chính thức <span class="roster-count">5 người</span></div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Trương Thiên</div></div>
+          <div class="player-item"><div class="player-num">2</div><div class="player-name">Đức Huy</div></div>
+          <div class="player-item"><div class="player-num">3</div><div class="player-name">Đăng Khoa</div></div>
+          <div class="player-item"><div class="player-num">4</div><div class="player-name">Ngọc Nguyên</div></div>
+          <div class="player-item"><div class="player-num">5</div><div class="player-name">Quý Vương</div></div>
+        </div>
+      </div>
+      <div class="card roster-card">
+        <div class="roster-title">Dự bị <span class="roster-count">7 người</span></div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Hoàng Duy</div></div>
+          <div class="player-item"><div class="player-num">2</div><div class="player-name">Hoàng Quân</div></div>
+          <div class="player-item"><div class="player-num">3</div><div class="player-name">Tín Đạt</div></div>
+          <div class="player-item"><div class="player-num">4</div><div class="player-name">Văn Phúc</div></div>
+          <div class="player-item"><div class="player-num">5</div><div class="player-name">Công Hiếu</div></div>
+          <div class="player-item"><div class="player-num">6</div><div class="player-name">Huy Hoàng</div></div>
+          <div class="player-item"><div class="player-num">7</div><div class="player-name">Việt Chương</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. BÓNG ĐÁ NỮ -->
+  <section class="panel" id="panel-bong-da-nu">
+    <div class="page-head">
+      <h2>Đội bóng Nữ 9/12</h2>
+    </div>
+
+    <div class="sport-info-grid">
+      <div class="card sport-header-card">
+        <div class="sport-label">Ngày thi đấu</div>
+        <div class="sport-value">Chiều thứ Bảy 21/11/2026</div>
+      </div>
+      <div class="card sport-header-card">
+        <div class="sport-label">Địa điểm</div>
+        <div class="sport-value">Sân bóng bộ đội trình sát, kiệt 151 Âu Cơ</div>
+      </div>
+    </div>
+
+    <div class="team-layout">
+      <div class="card roster-card">
+        <div class="roster-title">Đội hình chính thức <span class="roster-count">5 người</span></div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Huỳnh Gia Linh</div></div>
+          <div class="player-item"><div class="player-num">2</div><div class="player-name">Lê Gia Linh</div></div>
+          <div class="player-item"><div class="player-num">3</div><div class="player-name">Ngọc Nhi</div></div>
+          <div class="player-item"><div class="player-num">4</div><div class="player-name">Hà Giang</div></div>
+          <div class="player-item"><div class="player-num">5</div><div class="player-name">Anh Nguyên</div></div>
+        </div>
+      </div>
+      <div class="card roster-card">
+        <div class="roster-title">Dự bị <span class="roster-count">7 người</span></div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Phương Thảo</div></div>
+          <div class="player-item"><div class="player-num">2</div><div class="player-name">Bảo Trân</div></div>
+          <div class="player-item"><div class="player-num">3</div><div class="player-name">Thu Hòa</div></div>
+          <div class="player-item"><div class="player-num">4</div><div class="player-name">Ngọc Nhung</div></div>
+          <div class="player-item"><div class="player-num">5</div><div class="player-name">Ngọc Diễm</div></div>
+          <div class="player-item"><div class="player-num">6</div><div class="player-name">D.Phanh Linh</div></div>
+          <div class="player-item"><div class="player-num">7</div><div class="player-name">Kim Ngân</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CỜ VUA -->
+  <section class="panel" id="panel-co-vua">
+    <div class="page-head">
+      <h2>Danh sách thi Cờ Vua</h2>
+    </div>
+
+    <div class="sport-info-grid">
+      <div class="card sport-header-card">
+        <div class="sport-label">Ngày thi đấu</div>
+        <div class="sport-value">Chiều chủ nhật 15/11/2026</div>
+      </div>
+      <div class="card sport-header-card">
+        <div class="sport-label">Địa điểm</div>
+        <div class="sport-value">Hội trường Trường NLB</div>
+      </div>
+    </div>
+
+    <div class="team-layout">
+      <div class="card roster-card">
+        <div class="roster-title">Cờ Vua Nam</div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Võ Khánh Hưng</div></div>
+        </div>
+      </div>
+      <div class="card roster-card">
+        <div class="roster-title">Cờ Vua Nữ</div>
+        <div class="player-list">
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Đặng Trần Ngọc Nhung</div></div>
+          <div class="player-item"><div class="player-num">2</div><div class="player-name">Võ Minh Hải</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THỂ BƠI -->
+  <section class="panel" id="panel-the-boi">
+    <div class="page-head">
+      <h2>Danh sách thi Thể Bơi</h2>
+    </div>
+
+    <div class="sport-info-grid">
+      <div class="card sport-header-card">
+        <div class="sport-label">Ngày thi đấu</div>
+        <div class="sport-value">Sáng chủ nhật 15/11/2026</div>
+      </div>
+      <div class="card sport-header-card">
+        <div class="sport-label">Địa điểm</div>
+        <div class="sport-value">Trung tâm văn hóa phường Hòa Khánh (Cuối đường Trần Nguyên Đán)</div>
+      </div>
+    </div>
+
+    <div class="card roster-card" style="max-width: 500px;">
+      <div class="roster-title">Vận động viên <span class="roster-count">2 người</span></div>
+      <div class="player-list">
+        <div class="player-item"><div class="player-num">1</div><div class="player-name">Phạm Công Hiếu</div></div>
+        <div class="player-item"><div class="player-num">2</div><div class="player-name">Võ Minh Hải</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PICKLEBALL -->
+  <section class="panel" id="panel-pickleball">
+    <div class="page-head">
+      <h2>Danh sách thi Pickleball</h2>
+    </div>
+
+    <div class="sport-info-grid">
+      <div class="card sport-header-card">
+        <div class="sport-label">Ngày thi đấu</div>
+        <div class="sport-value">Sáng chủ nhật 22/11/2026</div>
+      </div>
+      <div class="card sport-header-card">
+        <div class="sport-label">Địa điểm</div>
+        <div class="sport-value">Sân 151 Âu Cơ</div>
+      </div>
+    </div>
+
+    <div class="card roster-card" style="max-width: 500px;">
+      <div class="roster-title">Vận động viên <span class="roster-count">1 người</span></div>
+      <div class="player-list">
+        <div class="player-item"><div class="player-num">1</div><div class="player-name">Đinh Khôi Nguyên</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. QUỸ ĐỘI -->
+  <section class="panel" id="panel-quy-doi">
     <div class="page-head">
       <h2>Quỹ đội</h2>
     </div>
@@ -541,83 +610,6 @@ tbody tr:hover { background: var(--bg-soft); }
     </div>
   </section>
 
-  <section class="panel" id="panel-tournament">
-    <div class="page-head">
-      <h2>Giải bóng đá Nguyễn Lương Bằng</h2>
-    </div>
-
-    <div class="info-grid">
-      <div class="card info-card">
-        <div class="info-label">Tên giải</div>
-        <div class="info-value">Giải bóng đá Nguyễn Lương Bằng 2025</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Thời gian thi đấu</div>
-        <div class="info-value">15/06 – 12/07/2025</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Địa điểm</div>
-        <div class="info-value">Sân bóng Nguyễn Lương Bằng, TP.HCM</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Thể thức</div>
-        <div class="info-value">Sân 7 người · Vòng bảng + Knockout</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Số đội tham dự</div>
-        <div class="info-value">12 đội</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Lệ phí</div>
-        <div class="info-value">3.000.000 đ / đội</div>
-      </div>
-    </div>
-
-    <div class="card rules-card">
-      <h3>Điều lệ giải đấu</h3>
-      <ol>
-        <li>Mỗi đội đăng ký tối thiểu 10 cầu thủ, tối đa 15 cầu thủ.</li>
-        <li>Thi đấu 2 hiệp, mỗi hiệp 25 phút, nghỉ giữa hiệp 10 phút.</li>
-        <li>Vòng bảng tính điểm: thắng 3 điểm, hòa 1 điểm, thua 0 điểm.</li>
-        <li>Số lần thay người không giới hạn trong trận.</li>
-        <li>Cầu thủ nhận 2 thẻ vàng trong một trận sẽ bị truất quyền thi đấu và nghỉ trận kế tiếp.</li>
-        <li>Các đội phải có mặt trước giờ bóng lăn 15 phút để điểm danh.</li>
-        <li>Trang phục thi đấu: áo chính thức của đội, giày đinh TF hoặc AG.</li>
-        <li>Giải thưởng: Nhất 10.000.000đ + cúp, Nhì 5.000.000đ, Ba 2.000.000đ.</li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="panel" id="panel-members">
-    <div class="page-head">
-      <h2>Thành viên</h2>
-    </div>
-    <div class="member-grid" id="member-grid"></div>
-  </section>
-
-  <section class="panel" id="panel-schedule">
-    <div class="page-head">
-      <h2>Lịch tập và thi đấu</h2>
-    </div>
-
-    <div class="schedule-list" id="schedule-list"></div>
-
-    <div class="info-grid" style="margin-top: 14px;">
-      <div class="card info-card">
-        <div class="info-label">Giờ tập cố định</div>
-        <div class="info-value">19:30 – 21:00 · Thứ 3 & Thứ 6</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Sân tập</div>
-        <div class="info-value">Sân số 3 — Nguyễn Lương Bằng</div>
-      </div>
-      <div class="card info-card">
-        <div class="info-label">Đội trưởng</div>
-        <div class="info-value">Nguyễn Minh Khoa · 0909 123 456</div>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <script type="module">
@@ -626,8 +618,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-// ĐƯỜNG DẪN TƯƠNG ĐỐI: Trình duyệt sẽ tự tìm file này trong cùng thư mục chứa file HTML.
-// Cách này giúp tránh hoàn toàn lỗi CORS khi chạy trên GitHub Pages.
+// ĐÃ SỬA: Dùng đường dẫn tương đối để tránh lỗi CORS trên GitHub Pages
 const MODEL_CONFIG = {
   fileName: './meshy-model-2026-11-10T06-17-52-861Z.glb'
 };
@@ -649,7 +640,6 @@ tabBtns.forEach(btn => {
 const box = document.getElementById('canvas-box');
 
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
 camera.position.set(0, 1.4, 4.5);
 
@@ -661,7 +651,6 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
 box.appendChild(renderer.domElement);
 
-// Ánh sáng
 scene.add(new THREE.HemisphereLight(0xffffff, 0xc8d0d8, 1.4));
 
 const key = new THREE.DirectionalLight(0xffffff, 2.2);
@@ -685,7 +674,6 @@ const backLight = new THREE.DirectionalLight(0xffffff, 0.8);
 backLight.position.set(0, 2, -6);
 scene.add(backLight);
 
-// Mặt sàn
 const ground = new THREE.Mesh(
   new THREE.CircleGeometry(4.5, 64),
   new THREE.MeshStandardMaterial({ color: 0xdde2e8, roughness: 0.9, metalness: 0.0 })
@@ -698,22 +686,15 @@ scene.add(ground);
 const holder = new THREE.Group();
 scene.add(holder);
 
-// Đối tượng Placeholder (hiển thị khi đang tải)
 function makePlaceholder() {
   const g = new THREE.Group();
   const mesh = new THREE.Mesh(
     new THREE.IcosahedronGeometry(1.1, 1),
-    new THREE.MeshStandardMaterial({
-      color: 0x9aa8b6,
-      roughness: 0.5,
-      metalness: 0.1,
-      flatShading: true
-    })
+    new THREE.MeshStandardMaterial({ color: 0x9aa8b6, roughness: 0.5, metalness: 0.1, flatShading: true })
   );
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   g.add(mesh);
-
   const wire = new THREE.LineSegments(
     new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.12, 1)),
     new THREE.LineBasicMaterial({ color: 0x506680, transparent: true, opacity: 0.3 })
@@ -758,7 +739,6 @@ new ResizeObserver(resize).observe(box);
 window.addEventListener('resize', resize);
 resize();
 
-/* Nút điều khiển */
 const btnRotate = document.getElementById('btn-rotate');
 btnRotate.addEventListener('click', () => {
   controls.autoRotate = !controls.autoRotate;
@@ -781,7 +761,6 @@ document.getElementById('btn-full').addEventListener('click', () => {
 const loadingOverlay = document.getElementById('loading-overlay');
 const errorMsg = document.getElementById('error-msg');
 
-// Cấu hình DRACO Loader (để giải nén mô hình nếu file của bạn bị nén)
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
 
@@ -795,7 +774,7 @@ function fitCameraToObject(obj) {
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
 
-  obj.position.sub(center); // Căn giữa mô hình
+  obj.position.sub(center);
   const maxDim = Math.max(size.x, size.y, size.z) || 1;
   const dist = maxDim / (2 * Math.tan(Math.PI * camera.fov / 360)) * 1.8;
 
@@ -811,7 +790,6 @@ function loadInitialModel() {
   loader.load(
     MODEL_CONFIG.fileName,
     (gltf) => {
-      // Tải thành công -> Ẩn loading, ẩn placeholder
       loadingOverlay.classList.add('hide');
       if (currentModel) { holder.remove(currentModel); disposeTree(currentModel); }
       placeholder.visible = false;
@@ -833,14 +811,12 @@ function loadInitialModel() {
       fitCameraToObject(model);
     },
     (xhr) => {
-      // Tiến trình tải
       if (xhr.total) {
         const percent = Math.round((xhr.loaded / xhr.total) * 100);
         document.querySelector('.loading-text').textContent = `Đang tải mô hình: ${percent}%`;
       }
     },
     (err) => {
-      // Lỗi
       console.error('Lỗi tải mô hình:', err);
       loadingOverlay.classList.add('hide');
       errorMsg.style.display = 'block';
@@ -848,7 +824,6 @@ function loadInitialModel() {
   );
 }
 
-// Xử lý giải phóng bộ nhớ
 function disposeTree(obj) {
   obj.traverse(o => {
     if (o.geometry) o.geometry.dispose();
@@ -864,10 +839,9 @@ function disposeTree(obj) {
   });
 }
 
-// Đợi 1 nhịp để canvas có kích thước rồi mới load
 setTimeout(loadInitialModel, 100);
 
-/* ---------------- Data rendering (Giữ nguyên) ---------------- */
+/* ---------------- Data Quỹ đội ---------------- */
 const PAYMENTS = [
   { name: 'Nguyễn Minh Khoa', role: 'Đội trưởng', amount: 200000, date: '02/06/2025', status: 'paid' },
   { name: 'Trần Đức Anh', role: 'Thủ môn', amount: 200000, date: '02/06/2025', status: 'paid' },
@@ -915,64 +889,12 @@ function renderPayments() {
 
   document.getElementById('pay-total').textContent = money(totalPaid);
   document.getElementById('pay-target').textContent = money(totalTarget);
-  document.getElementById('pay-count').textContent =
-    `${paid.length}/${PAYMENTS.length} người đã đóng`;
+  document.getElementById('pay-count').textContent = `${paid.length}/${PAYMENTS.length} người đã đóng`;
 
   setTimeout(() => document.getElementById('bar-fill').style.width = pct + '%', 200);
 }
 
-const MEMBERS = [
-  { name: 'Nguyễn Minh Khoa', num: 10, pos: 'Tiền đạo · Đội trưởng' },
-  { name: 'Trần Đức Anh', num: 1, pos: 'Thủ môn' },
-  { name: 'Lê Hoàng Nam', num: 4, pos: 'Trung vệ' },
-  { name: 'Phạm Quốc Bảo', num: 5, pos: 'Trung vệ' },
-  { name: 'Vũ Tiến Dũng', num: 8, pos: 'Tiền vệ trung tâm' },
-  { name: 'Đỗ Văn Hùng', num: 6, pos: 'Tiền vệ phòng ngự' },
-  { name: 'Ngô Gia Huy', num: 11, pos: 'Tiền đạo cánh' },
-  { name: 'Bùi Xuân Trường', num: 7, pos: 'Tiền đạo cánh' },
-  { name: 'Hoàng Nhật Minh', num: 14, pos: 'Hậu vệ cánh' },
-  { name: 'Đặng Tuấn Kiệt', num: 17, pos: 'Tiền vệ tấn công' },
-  { name: 'Trịnh Bảo Long', num: 3, pos: 'Hậu vệ trái' },
-  { name: 'Lý Thành Đạt', num: 9, pos: 'Tiền đạo dự bị' },
-];
-
-function renderMembers() {
-  document.getElementById('member-grid').innerHTML = MEMBERS.map(m => `
-    <div class="card member-card">
-      <div class="member-num">${m.num}</div>
-      <div class="member-info">
-        <h5>${m.name}</h5>
-        <div class="pos">${m.pos}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-const SCHEDULE = [
-  { title: 'Tập luyện — chiến thuật phòng ngự', meta: 'Sân số 3 · Nguyễn Lương Bằng', time: 'Thứ 3 · 19:30 – 21:00' },
-  { title: 'Tập luyện — sút và phối hợp', meta: 'Sân số 3 · Nguyễn Lương Bằng', time: 'Thứ 6 · 19:30 – 21:00' },
-  { title: 'Vòng bảng · FC 9A12 vs FC 9A10', meta: 'Sân số 1 · Nguyễn Lương Bằng', time: '15/06 · 18:00' },
-  { title: 'Vòng bảng · FC 9A12 vs FC 9A7', meta: 'Sân số 2 · Nguyễn Lương Bằng', time: '19/06 · 19:00' },
-  { title: 'Vòng bảng · FC 9A12 vs FC 9B3', meta: 'Sân số 1 · Nguyễn Lương Bằng', time: '23/06 · 17:30' },
-  { title: 'Bán kết', meta: 'Sân trung tâm · Nguyễn Lương Bằng', time: '05/07 · 19:00' },
-  { title: 'Chung kết', meta: 'Sân trung tâm · Nguyễn Lương Bằng', time: '12/07 · 19:30' },
-];
-
-function renderSchedule() {
-  document.getElementById('schedule-list').innerHTML = SCHEDULE.map(s => `
-    <div class="card schedule-item">
-      <div class="schedule-left">
-        <h4>${s.title}</h4>
-        <p>${s.meta}</p>
-      </div>
-      <div class="schedule-time">${s.time}</div>
-    </div>
-  `).join('');
-}
-
 renderPayments();
-renderMembers();
-renderSchedule();
 </script>
 </body>
 </html>
