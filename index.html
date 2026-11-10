@@ -140,13 +140,33 @@ main {
 .panel { display: none; }
 .panel.active { display: block; }
 
-.page-head { margin-bottom: 22px; }
+.page-head { 
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 
 .page-head h2 {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.4px;
   color: var(--text);
+}
+
+/* Tag giá tiền */
+.price-tag {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  border: 1px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(31, 90, 67, 0.12);
+  white-space: nowrap;
 }
 
 .card {
@@ -340,9 +360,31 @@ main {
 .bar { height: 8px; background: #eef0f3; border-radius: 99px; overflow: hidden; }
 .bar-fill { height: 100%; background: var(--accent); width: 0; transition: width 1s ease; border-radius: 99px; }
 
-.table-card { overflow: hidden; }
+.table-card { 
+  overflow: hidden; 
+  max-height: 550px; /* Giới hạn chiều cao để có thanh cuộn */
+  overflow-y: auto; 
+}
+
+/* Custom thanh cuộn cho bảng */
+.table-card::-webkit-scrollbar { width: 8px; }
+.table-card::-webkit-scrollbar-track { background: var(--bg-soft); }
+.table-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.table-card::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
-thead th { text-align: left; padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+thead th { 
+  text-align: left; 
+  padding: 12px 20px; 
+  font-size: 12px; 
+  font-weight: 600; 
+  color: var(--muted); 
+  background: var(--bg-soft); 
+  border-bottom: 1px solid var(--border); 
+  position: sticky; 
+  top: 0; 
+  z-index: 10;
+}
 tbody td { padding: 12px 20px; border-bottom: 1px solid var(--border); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: var(--bg-soft); }
@@ -387,6 +429,7 @@ tbody tr:hover { background: var(--bg-soft); }
   <section class="panel active" id="panel-jersey">
     <div class="page-head">
       <h2>Áo đấu 3D</h2>
+      <div class="price-tag">Giá: 180k</div>
     </div>
 
     <div id="canvas-box">
@@ -428,7 +471,7 @@ tbody tr:hover { background: var(--bg-soft); }
       <div class="card roster-card">
         <div class="roster-title">Đội hình chính thức <span class="roster-count">5 người</span></div>
         <div class="player-list">
-          <div class="player-item"><div class="player-num">1</div><div class="player-name">Trương Thiên</div></div>
+          <div class="player-item"><div class="player-num">1</div><div class="player-name">Trường Thiện</div></div>
           <div class="player-item"><div class="player-num">2</div><div class="player-name">Đức Huy</div></div>
           <div class="player-item"><div class="player-num">3</div><div class="player-name">Đăng Khoa</div></div>
           <div class="player-item"><div class="player-num">4</div><div class="player-name">Ngọc Nguyên</div></div>
@@ -444,7 +487,7 @@ tbody tr:hover { background: var(--bg-soft); }
           <div class="player-item"><div class="player-num">4</div><div class="player-name">Văn Phúc</div></div>
           <div class="player-item"><div class="player-num">5</div><div class="player-name">Công Hiếu</div></div>
           <div class="player-item"><div class="player-num">6</div><div class="player-name">Huy Hoàng</div></div>
-          <div class="player-item"><div class="player-num">7</div><div class="player-name">Việt Chương</div></div>
+          <div class="player-item"><div class="player-num">7</div><div class="player-name">Viết Chương</div></div>
         </div>
       </div>
     </div>
@@ -486,7 +529,7 @@ tbody tr:hover { background: var(--bg-soft); }
           <div class="player-item"><div class="player-num">3</div><div class="player-name">Thu Hòa</div></div>
           <div class="player-item"><div class="player-num">4</div><div class="player-name">Ngọc Nhung</div></div>
           <div class="player-item"><div class="player-num">5</div><div class="player-name">Ngọc Diễm</div></div>
-          <div class="player-item"><div class="player-num">6</div><div class="player-name">D.Phanh Linh</div></div>
+          <div class="player-item"><div class="player-num">6</div><div class="player-name">Đ.Khánh Linh</div></div>
           <div class="player-item"><div class="player-num">7</div><div class="player-name">Kim Ngân</div></div>
         </div>
       </div>
@@ -521,13 +564,12 @@ tbody tr:hover { background: var(--bg-soft); }
         <div class="roster-title">Cờ Vua Nữ</div>
         <div class="player-list">
           <div class="player-item"><div class="player-num">1</div><div class="player-name">Đặng Trần Ngọc Nhung</div></div>
-          <div class="player-item"><div class="player-num">2</div><div class="player-name">Võ Minh Hải</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 5. THỂ BƠI -->
+  <!-- 5. Bơi Lội  -->
   <section class="panel" id="panel-the-boi">
     <div class="page-head">
       <h2>Danh sách thi Thể Bơi</h2>
@@ -581,7 +623,7 @@ tbody tr:hover { background: var(--bg-soft); }
   <!-- 7. QUỸ ĐỘI -->
   <section class="panel" id="panel-quy-doi">
     <div class="page-head">
-      <h2>Quỹ đội</h2>
+      <h2>Quỹ đội (47 học sinh)</h2>
     </div>
 
     <div class="card progress-card">
@@ -618,7 +660,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-// ĐÃ SỬA: Dùng đường dẫn tương đối để tránh lỗi CORS trên GitHub Pages
 const MODEL_CONFIG = {
   fileName: './meshy-model-2026-11-10T06-17-52-861Z.glb'
 };
@@ -841,18 +882,55 @@ function disposeTree(obj) {
 
 setTimeout(loadInitialModel, 100);
 
-/* ---------------- Data Quỹ đội ---------------- */
+/* ---------------- Data Quỹ đội (47 Học sinh - 180k/người) ---------------- */
 const PAYMENTS = [
-  { name: 'Nguyễn Minh Khoa', role: 'Đội trưởng', amount: 200000, date: '02/06/2025', status: 'paid' },
-  { name: 'Trần Đức Anh', role: 'Thủ môn', amount: 200000, date: '02/06/2025', status: 'paid' },
-  { name: 'Lê Hoàng Nam', role: 'Hậu vệ', amount: 200000, date: '03/06/2025', status: 'paid' },
-  { name: 'Phạm Quốc Bảo', role: 'Hậu vệ', amount: 200000, date: '03/06/2025', status: 'paid' },
-  { name: 'Vũ Tiến Dũng', role: 'Tiền vệ', amount: 200000, date: '04/06/2025', status: 'paid' },
-  { name: 'Đỗ Văn Hùng', role: 'Tiền vệ', amount: 200000, date: '—', status: 'unpaid' },
-  { name: 'Ngô Gia Huy', role: 'Tiền đạo', amount: 200000, date: '05/06/2025', status: 'paid' },
-  { name: 'Bùi Xuân Trường', role: 'Tiền đạo', amount: 200000, date: '—', status: 'wait' },
-  { name: 'Hoàng Nhật Minh', role: 'Dự bị', amount: 200000, date: '—', status: 'unpaid' },
-  { name: 'Đặng Tuấn Kiệt', role: 'Dự bị', amount: 200000, date: '06/06/2025', status: 'paid' },
+  { name: 'Đầu Trần Duy Anh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Lê Tú Anh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Gia Bảo', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đinh Viết Chương', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Bùi Thị Ngọc Diễm', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Hồ Hoàng Duy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Tin Đạt', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Võ Hà Giang', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Võ Minh Hải', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Gia Hân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Công Hiếu', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Thị Thu Hòa', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Bảo Huy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trương Đức Huy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Võ Khánh Hưng', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Minh Khang', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Đăng Khoa', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trương Tuấn Kiệt', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đặng Khánh Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Huỳnh Gia Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Lê Gia Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Thị Khánh Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Trần Phương Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Hoàng Long', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Thanh Mai', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Hải Minh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Kim Ngân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đinh Khôi Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phùng Lê Anh Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Tô Ngọc Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Thành Nhân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Ngọc Nhi', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Phạm Bảo Nhi', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đặng Trần Ngọc Nhung', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Vũ Hồng Phong', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Bùi Nguyễn Văn Phúc', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Hoàng Quân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Đăng Diễm Quỳnh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Triệu Kim Thái', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Ngô Phương Thảo', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Lưu Trường Thiện', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Lê Phương An Thy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Lê Quỳnh Thy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Thị Bảo Trân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Quý Vương', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Hải Yến', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Huy Hoàng', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
 ];
 
 function money(n) { return n.toLocaleString('vi-VN'); }
