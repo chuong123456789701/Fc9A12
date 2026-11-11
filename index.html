@@ -175,6 +175,52 @@ main {
   border-radius: 10px;
 }
 
+/* ============ GENDER TABS (Form Nam / Form Nữ) ============ */
+.gender-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  max-width: 520px;
+}
+
+.gender-btn {
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: -0.2px;
+}
+
+.gender-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--bg-soft);
+  transform: translateY(-1px);
+}
+
+.gender-btn.active {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 2px 10px rgba(31, 90, 67, 0.15);
+}
+
+.gender-btn .gender-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
 /* ============ 3D VIEWER ============ */
 #canvas-box {
   position: relative;
@@ -439,6 +485,10 @@ tbody tr:hover { background: var(--bg-soft); }
   #canvas-box { height: 400px; }
   .team-layout { grid-template-columns: 1fr; }
   main { padding: 20px 16px 40px; }
+
+  .gender-tabs { max-width: 100%; }
+  .gender-btn { padding: 13px 14px; font-size: 14.5px; }
+  .gender-btn .gender-icon { font-size: 17px; }
 }
 </style>
 </head>
@@ -473,6 +523,18 @@ tbody tr:hover { background: var(--bg-soft); }
       <div class="price-tag">Giá: 180k</div>
     </div>
 
+    <!-- Hai nút to: Form Nam / Form Nữ -->
+    <div class="gender-tabs">
+      <button class="gender-btn active" data-gender="male">
+        <span class="gender-icon">♂</span>
+        <span>Form Nam</span>
+      </button>
+      <button class="gender-btn" data-gender="female">
+        <span class="gender-icon">♀</span>
+        <span>Form Nữ</span>
+      </button>
+    </div>
+
     <div id="canvas-box">
       <div class="viewer-controls">
         <button class="ctrl-btn on" id="btn-rotate" title="Tự động xoay">↻</button>
@@ -487,7 +549,7 @@ tbody tr:hover { background: var(--bg-soft); }
     </div>
     
     <div class="error-msg" id="error-msg">
-      Không thể tải mô hình. Hãy chắc chắn file <b>meshy-model-2026-11-10T06-17-52-861Z.glb</b> đã được up lên Github cùng thư mục với file HTML này.
+      Không thể tải mô hình. Hãy chắc chắn file <b id="error-file-name">...</b> đã được up lên Github cùng thư mục với file HTML này.
     </div>
   </section>
 
@@ -701,8 +763,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-const MODEL_CONFIG = {
-  fileName: './meshy-model-2026-11-10T06-17-52-861Z.glb'
+/* ---------------- Cấu hình 2 model (Nam / Nữ) ---------------- */
+const MODEL_CONFIGS = {
+  male:   { fileName: './meshy-model-2026-11-10T06-17-52-861Z.glb' },  // model cũ
+  female: { fileName: './meshy-model-2026-11-11T15-14-42-674Z.glb' }   // model mới
 };
 
 /* ---------------- Tab switching ---------------- */
@@ -842,6 +906,8 @@ document.getElementById('btn-full').addEventListener('click', () => {
 /* ---------------- Load Model ---------------- */
 const loadingOverlay = document.getElementById('loading-overlay');
 const errorMsg = document.getElementById('error-msg');
+const errorFileName = document.getElementById('error-file-name');
+const loadingText = document.querySelector('.loading-text');
 
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
@@ -850,6 +916,8 @@ const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
 let currentModel = null;
+let currentGender = null;
+let isLoading = false;
 
 function fitCameraToObject(obj) {
   const bounds = new THREE.Box3().setFromObject(obj);
@@ -868,12 +936,31 @@ function fitCameraToObject(obj) {
   controls.update();
 }
 
-function loadInitialModel() {
+function loadModel(gender) {
+  // Nếu đang là model này rồi thì không tải lại
+  if (currentGender === gender || isLoading) return;
+
+  const config = MODEL_CONFIGS[gender];
+  if (!config) return;
+
+  isLoading = true;
+  errorMsg.style.display = 'none';
+  loadingText.textContent = 'Đang tải mô hình 3D...';
+  loadingOverlay.classList.remove('hide');
+
   loader.load(
-    MODEL_CONFIG.fileName,
+    config.fileName,
     (gltf) => {
+      isLoading = false;
       loadingOverlay.classList.add('hide');
-      if (currentModel) { holder.remove(currentModel); disposeTree(currentModel); }
+
+      // Xoá model cũ nếu có
+      if (currentModel) {
+        holder.remove(currentModel);
+        disposeTree(currentModel);
+        currentModel = null;
+      }
+
       placeholder.visible = false;
 
       const model = gltf.scene;
@@ -890,18 +977,28 @@ function loadInitialModel() {
 
       holder.add(model);
       currentModel = model;
+      currentGender = gender;
       fitCameraToObject(model);
     },
     (xhr) => {
       if (xhr.total) {
         const percent = Math.round((xhr.loaded / xhr.total) * 100);
-        document.querySelector('.loading-text').textContent = `Đang tải mô hình: ${percent}%`;
+        loadingText.textContent = `Đang tải mô hình: ${percent}%`;
       }
     },
     (err) => {
+      isLoading = false;
       console.error('Lỗi tải mô hình:', err);
       loadingOverlay.classList.add('hide');
+      errorFileName.textContent = config.fileName.split('/').pop();
       errorMsg.style.display = 'block';
+
+      // Nếu lỗi khi chuyển sang model khác, quay lại trạng thái nút trước đó
+      if (currentGender) {
+        document.querySelectorAll('.gender-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.gender === currentGender);
+        });
+      }
     }
   );
 }
@@ -921,56 +1018,73 @@ function disposeTree(obj) {
   });
 }
 
-setTimeout(loadInitialModel, 100);
+/* ---------------- Nút chuyển Form Nam / Form Nữ ---------------- */
+const genderBtns = document.querySelectorAll('.gender-btn');
+genderBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    genderBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadModel(btn.dataset.gender);
+  });
+});
+
+/* ---------------- Tải model mặc định (Nam) ---------------- */
+setTimeout(() => loadModel('male'), 100);
 
 /* ---------------- Data Quỹ đội (47 Học sinh - 180k/người) ---------------- */
+/* 36 người ĐÃ NỘP - 11 người CHƯA NỘP
+   Chưa nộp: Phạm Lê Tú Anh, Bùi Thị Ngọc Diễm, Trương Tuấn Kiệt,
+   Đặng Khánh Linh, Trần Thanh Mai, Phùng Lê Anh Nguyên,
+   Nguyễn Hoàng Quân, Bùi Nguyễn Văn Phúc, Trần Ngô Phương Thảo,
+   Nguyễn Bảo Huy, Huy Hoàng */
 const PAYMENTS = [
-  { name: 'Đầu Trần Duy Anh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đầu Trần Duy Anh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Phạm Lê Tú Anh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trần Gia Bảo', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Đinh Viết Chương', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Gia Bảo', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Đinh Viết Chương', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Bùi Thị Ngọc Diễm', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Hồ Hoàng Duy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Tin Đạt', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Võ Hà Giang', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Võ Minh Hải', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trần Gia Hân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Phạm Công Hiếu', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Thị Thu Hòa', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Hồ Hoàng Duy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Tin Đạt', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Võ Hà Giang', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Võ Minh Hải', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Trần Gia Hân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Phạm Công Hiếu', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Thị Thu Hòa', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Bảo Huy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trương Đức Huy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Võ Khánh Hưng', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Minh Khang', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trần Đăng Khoa', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trương Đức Huy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Võ Khánh Hưng', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Minh Khang', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Trần Đăng Khoa', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trương Tuấn Kiệt', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
   { name: 'Đặng Khánh Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Huỳnh Gia Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Lê Gia Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Thị Khánh Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Trần Phương Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Hoàng Long', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Huỳnh Gia Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Lê Gia Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Thị Khánh Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Trần Phương Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Hoàng Long', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trần Thanh Mai', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Phạm Hải Minh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Kim Ngân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Đinh Khôi Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Hải Minh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Kim Ngân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Đinh Khôi Nguyên', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Phùng Lê Anh Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Tô Ngọc Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Thành Nhân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Ngọc Nhi', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trần Phạm Bảo Nhi', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Đặng Trần Ngọc Nhung', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Vũ Hồng Phong', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Tô Ngọc Nguyên', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Thành Nhân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Ngọc Nhi', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Trần Phạm Bảo Nhi', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Đặng Trần Ngọc Nhung', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Vũ Hồng Phong', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Bùi Nguyễn Văn Phúc', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
   { name: 'Nguyễn Hoàng Quân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Đăng Diễm Quỳnh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Triệu Kim Thái', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Đăng Diễm Quỳnh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Triệu Kim Thái', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trần Ngô Phương Thảo', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Lưu Trường Thiện', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Lê Phương An Thy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Lê Quỳnh Thy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Nguyễn Thị Bảo Trân', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Trần Quý Vương', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Phạm Hải Yến', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Lưu Trường Thiện', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Lê Phương An Thy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Lê Quỳnh Thy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Nguyễn Thị Bảo Trân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Trần Quý Vương', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
+  { name: 'Phạm Hải Yến', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Huy Hoàng', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
 ];
 
