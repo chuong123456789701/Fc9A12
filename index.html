@@ -1033,17 +1033,15 @@ genderBtns.forEach(btn => {
 setTimeout(() => loadModel('male'), 100);
 
 /* ---------------- Data Quỹ đội (47 Học sinh - 180k/người) ---------------- */
-/* 36 người ĐÃ NỘP - 11 người CHƯA NỘP
-   Chưa nộp: Phạm Lê Tú Anh, Bùi Thị Ngọc Diễm, Trương Tuấn Kiệt,
-   Đặng Khánh Linh, Trần Thanh Mai, Phùng Lê Anh Nguyên,
-   Nguyễn Hoàng Quân, Bùi Nguyễn Văn Phúc, Trần Ngô Phương Thảo,
-   Nguyễn Bảo Huy, Huy Hoàng */
+/* ĐÃ CẬP NHẬT: 43 người ĐÃ NỘP - 4 người CHƯA NỘP
+   Chưa nộp: Trương Tuấn Kiệt, Nguyễn Hoàng Quân,
+   Bùi Nguyễn Văn Phúc, Trần Ngô Phương Thảo */
 const PAYMENTS = [
   { name: 'Đầu Trần Duy Anh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Phạm Lê Tú Anh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phạm Lê Tú Anh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trần Gia Bảo', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Đinh Viết Chương', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Bùi Thị Ngọc Diễm', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Bùi Thị Ngọc Diễm', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Hồ Hoàng Duy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Tin Đạt', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Võ Hà Giang', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
@@ -1051,23 +1049,23 @@ const PAYMENTS = [
   { name: 'Trần Gia Hân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Phạm Công Hiếu', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Thị Thu Hòa', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Nguyễn Bảo Huy', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Nguyễn Bảo Huy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trương Đức Huy', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Võ Khánh Hưng', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Minh Khang', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trần Đăng Khoa', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trương Tuấn Kiệt', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
-  { name: 'Đặng Khánh Linh', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Đặng Khánh Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Huỳnh Gia Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Lê Gia Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Thị Khánh Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Trần Phương Linh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Hoàng Long', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Trần Thanh Mai', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Trần Thanh Mai', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Phạm Hải Minh', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Kim Ngân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Đinh Khôi Nguyên', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Phùng Lê Anh Nguyên', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Phùng Lê Anh Nguyên', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Tô Ngọc Nguyên', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Thành Nhân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Nguyễn Ngọc Nhi', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
@@ -1085,7 +1083,7 @@ const PAYMENTS = [
   { name: 'Nguyễn Thị Bảo Trân', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Trần Quý Vương', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
   { name: 'Phạm Hải Yến', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
-  { name: 'Huy Hoàng', role: 'Học sinh', amount: 180000, date: '—', status: 'unpaid' },
+  { name: 'Huy Hoàng', role: 'Học sinh', amount: 180000, date: '11/11/2026', status: 'paid' },
 ];
 
 function money(n) { return n.toLocaleString('vi-VN'); }
